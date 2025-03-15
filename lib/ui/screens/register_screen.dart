@@ -10,6 +10,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _firstNameTEController = TextEditingController();
+  final TextEditingController _lastNameTEController = TextEditingController();
+  final TextEditingController _mobileTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,15 +31,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 24),
-              TextField(decoration: InputDecoration(hintText: 'Email')),
+              TextField(
+                controller: _emailTEController,
+                decoration: InputDecoration(hintText: 'Email'),
+              ),
               const SizedBox(height: 16),
-              TextField(decoration: InputDecoration(hintText: 'First Name')),
+              TextField(
+                controller: _firstNameTEController,
+                decoration: InputDecoration(hintText: 'First Name'),
+              ),
               const SizedBox(height: 16),
-              TextField(decoration: InputDecoration(hintText: 'Last Name')),
+              TextField(
+                controller: _lastNameTEController,
+                decoration: InputDecoration(hintText: 'Last Name'),
+              ),
               const SizedBox(height: 16),
-              TextField(decoration: InputDecoration(hintText: 'Mobile Number')),
+              TextField(
+                controller: _mobileTEController,
+                decoration: InputDecoration(hintText: 'Mobile Number'),
+              ),
               const SizedBox(height: 16),
-              TextField(decoration: InputDecoration(hintText: 'Password')),
+              TextField(
+                controller: _passwordTEController,
+                decoration: InputDecoration(hintText: 'Password'),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {},
@@ -56,7 +77,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = _onTapSignInButton,
+                        recognizer:
+                            TapGestureRecognizer()..onTap = _onTapSignInButton,
                       ),
                     ],
                   ),
@@ -72,4 +94,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _onTapSignInButton() {
     Navigator.pop(context);
   }
+
+  @override
+  void dispose() {
+    _emailTEController.dispose();
+    _firstNameTEController.dispose();
+    _lastNameTEController.dispose();
+    _mobileTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
+  }
+
 }
