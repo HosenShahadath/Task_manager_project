@@ -1,21 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager_project/ui/screens/pin_verification_screen.dart';
+import 'package:task_manager_project/ui/screens/register_screen.dart';
 import 'package:task_manager_project/ui/widgets/screen_background.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class ForgotPasswordVerifyEmailScreen extends StatefulWidget {
+  const ForgotPasswordVerifyEmailScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<ForgotPasswordVerifyEmailScreen> createState() => _ForgotPasswordVerifyEmailScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEmailScreen> {
   final TextEditingController _emailTEController = TextEditingController();
-  final TextEditingController _firstNameTEController = TextEditingController();
-  final TextEditingController _lastNameTEController = TextEditingController();
-  final TextEditingController _mobileTEController = TextEditingController();
-  final TextEditingController _passwordTEController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -31,8 +28,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 const SizedBox(height: 80),
                 Text(
-                  'Join With Us',
+                  'Your Email Address',
                   style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 4,),
+                Text(
+                  '6 digit verification pin will be sent to your email',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.grey
+                  ),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -42,32 +46,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(hintText: 'Email'),
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  textInputAction: TextInputAction.next,
-                  controller: _firstNameTEController,
-                  decoration: InputDecoration(hintText: 'First Name'),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  textInputAction: TextInputAction.next,
-                  controller: _lastNameTEController,
-                  decoration: InputDecoration(hintText: 'Last Name'),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.phone,
-                  controller: _mobileTEController,
-                  decoration: InputDecoration(hintText: 'Mobile Number'),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordTEController,
-                  decoration: InputDecoration(hintText: 'Password'),
-                ),
-                const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: _onTabSubmitButton,
+                  onPressed: _onTapSubmitButton,
                   child: Icon(Icons.arrow_circle_right_outlined),
                 ),
                 const SizedBox(height: 32),
@@ -80,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fontSize: 14,
                       ),
                       children: [
-                        TextSpan(text: "Already Have an Account? "),
+                        TextSpan(text: "Have account? "),
                         TextSpan(
                           text: "Sing In.",
                           style: TextStyle(
@@ -88,7 +68,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                           recognizer:
-                              TapGestureRecognizer()..onTap = _onTapSignInButton,
+                              TapGestureRecognizer()
+                                ..onTap = _onTapSignUpButton,
                         ),
                       ],
                     ),
@@ -102,22 +83,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _onTapSignInButton() {
+  void _onTapSignUpButton() {
     Navigator.pop(context);
   }
 
-  void _onTabSubmitButton(){
-
+  void _onTapSubmitButton(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const PinVerificationScreen()));
   }
 
   @override
   void dispose() {
+    // TODO: implement dispose
     _emailTEController.dispose();
-    _firstNameTEController.dispose();
-    _lastNameTEController.dispose();
-    _mobileTEController.dispose();
-    _passwordTEController.dispose();
     super.dispose();
   }
-
 }
