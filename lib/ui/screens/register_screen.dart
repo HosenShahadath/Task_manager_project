@@ -40,6 +40,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   controller: _emailTEController,
                   decoration: InputDecoration(hintText: 'Email'),
+                  validator: (String? value){
+                    if(value?.trim().isEmpty ?? true){
+                      return 'Enter a valid email';
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
