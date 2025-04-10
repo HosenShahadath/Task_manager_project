@@ -1,7 +1,10 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager_project/data/service/network_client.dart';
+import 'package:task_manager_project/data/utils/urls.dart';
 import 'package:task_manager_project/ui/widgets/screen_background.dart';
+import 'package:task_manager_project/ui/widgets/snack_bar_message.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,8 +19,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _lastNameTEController = TextEditingController();
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+  bool _registrationInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(32),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -41,9 +45,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   controller: _emailTEController,
                   decoration: InputDecoration(hintText: 'Email'),
-                  validator: (String? value){
+                  validator: (String? value) {
                     String email = value?.trim() ?? '';
-                    if(EmailValidator.validate(email) == false){
+                    if (EmailValidator.validate(email) == false) {
                       return 'Enter a valid email';
                     }
                     return null;
@@ -54,8 +58,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textInputAction: TextInputAction.next,
                   controller: _firstNameTEController,
                   decoration: InputDecoration(hintText: 'First Name'),
-                  validator: (String? value){
-                    if(value?.trim().isEmpty ?? true){
+                  validator: (String? value) {
+                    if (value?.trim().isEmpty ?? true) {
                       return 'Enter your first name';
                     }
                     return null;
@@ -66,8 +70,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textInputAction: TextInputAction.next,
                   controller: _lastNameTEController,
                   decoration: InputDecoration(hintText: 'Last Name'),
-                  validator: (String? value){
-                    if(value?.trim().isEmpty ?? true){
+                  validator: (String? value) {
+                    if (value?.trim().isEmpty ?? true) {
                       return 'Enter your last name';
                     }
                     return null;
@@ -79,10 +83,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.phone,
                   controller: _mobileTEController,
                   decoration: InputDecoration(hintText: 'Mobile Number'),
-                  validator: (String? value){
+                  validator: (String? value) {
                     String phone = value?.trim() ?? '';
-                    RegExp regExp = RegExp(r"^(?:\\+88|88)?(01[3-9]\\d{8})$");
-                    if(regExp.hasMatch(phone) == false){
+                    RegExp regExp = RegExp(r"^(?:\+?88|0088)?01[15-9]\d{8}$");
+                    if (regExp.hasMatch(phone) == false) {
                       return 'Enter your valid phone number';
                     }
                     return null;
@@ -92,17 +96,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _passwordTEController,
                   decoration: InputDecoration(hintText: 'Password'),
-                  validator: (String? value){
-                    if((value?.isEmpty ?? true) || value!.length < 6) {
+                  validator: (String? value) {
+                    if ((value?.isEmpty ?? true) || value!.length < 6) {
                       return 'Enter your password more than 6 letters';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _onTabSubmitButton,
-                  child: Icon(Icons.arrow_circle_right_outlined),
+                Visibility(
+                  visible: _registrationInProgress == false,
+                  replacement: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: _onTabSubmitButton,
+                    child: Icon(Icons.arrow_circle_right_outlined),
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Center(
@@ -122,7 +132,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                           recognizer:
-                              TapGestureRecognizer()..onTap = _onTapSignInButton,
+                              TapGestureRecognizer()
+                                ..onTap = _onTapSignInButton,
                         ),
                       ],
                     ),
@@ -140,13 +151,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Navigator.pop(context);
   }
 
-  void _onTabSubmitButton(){
-    if(_formKey.currentState!.validate()){
+  void _onTabSubmitButton() {
+    if (_formKey.currentState!.validate()) {
       registerUser();
     }
   }
 
-  Future<void> registerUser() async{
+  Future<void> registerUser() async {
+    _registrationInProgress = true;
+    setState(() {
+
+    });
+    Map<String, dynamic> requestBody = {
+      "email": _emailTEController.text.trim(),
+      "firstName": _firstNameTEController.text.trim(),
+      "lastName": _lastNameTEController.text.trim(),
+      "mobile": _mobileTEController.text.trim(),
+      "password": _passwordTEController.text,
+    };
+
+    NetworkResponse response = await NetworkClient.postRequest(
+      url: Urls.registerUrl,
+      body: requestBody,
+    );
+    _registrationInProgress = false;
+    setState(() {
+
+    });
+    if (response.isSuccess){
+      showSnackBarMessage(context, 'User Register successful');
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
 
   }
 
@@ -159,5 +195,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordTEController.dispose();
     super.dispose();
   }
-
 }
