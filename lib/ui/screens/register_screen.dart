@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager_project/data/service/network_client.dart';
 import 'package:task_manager_project/data/utils/urls.dart';
+import 'package:task_manager_project/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_project/ui/widgets/screen_background.dart';
 import 'package:task_manager_project/ui/widgets/snack_bar_message.dart';
 
@@ -106,9 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 Visibility(
                   visible: _registrationInProgress == false,
-                  replacement: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  replacement: const CenteredCircularProgressIndicator(),
                   child: ElevatedButton(
                     onPressed: _onTabSubmitButton,
                     child: Icon(Icons.arrow_circle_right_outlined),
@@ -184,6 +183,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showSnackBarMessage(context, response.errorMessage, true);
     }
 
+  }
+
+  void _clearTextField(){
+    _emailTEController.clear();
+    _firstNameTEController.clear();
+    _lastNameTEController.clear();
+    _mobileTEController.clear();
+    _passwordTEController.clear();
   }
 
   @override
