@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_project/ui/controllers/auth_controller.dart';
 
+import '../screens/login_screen.dart';
 import '../screens/update_profile_screen.dart';
 
-class TMAppBar extends StatelessWidget implements PreferredSizeWidget{
+class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TMAppBar({super.key, this.fromProfileScreen});
 
   final bool? fromProfileScreen;
@@ -14,8 +16,8 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget{
     return AppBar(
       backgroundColor: Colors.green,
       title: GestureDetector(
-        onTap: (){
-          if(fromProfileScreen ?? false){
+        onTap: () {
+          if (fromProfileScreen ?? false) {
             return;
           }
           _onTapProfileSection(context);
@@ -29,25 +31,37 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Rahim Hasan',
+                    AuthController.userModel?.fullName ?? '',
                     style: textTheme.bodyLarge?.copyWith(color: Colors.white),
                   ),
                   Text(
-                    'rahim@gmail.com',
+                    AuthController.userModel?.email ?? '',
                     style: textTheme.bodySmall?.copyWith(color: Colors.white),
                   ),
                 ],
               ),
             ),
-            IconButton(onPressed: () {}, icon: Icon(Icons.logout)),
+            IconButton(onPressed: () => _onTapLogOutButton(context), icon: Icon(Icons.logout)),
           ],
         ),
       ),
     );
   }
 
-  void _onTapProfileSection(BuildContext context){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const UpdateProfileScreen()));
+  void _onTapProfileSection(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UpdateProfileScreen()),
+    );
+  }
+
+  void _onTapLogOutButton(BuildContext context) async {
+    await AuthController.clearUserData();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (predicate) => false
+    );
   }
 
   @override
