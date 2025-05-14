@@ -1,6 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
+import 'package:task_manager_project/app.dart';
+import 'package:task_manager_project/ui/controllers/auth_controller.dart';
+import 'package:task_manager_project/ui/screens/login_screen.dart';
 
 class NetworkResponse {
   final bool isSuccess;
@@ -24,7 +29,12 @@ class NetworkClient {
       Uri uri = Uri.parse(url);
       _preRequestLog(url);
       Response response = await get(uri);
-     _postRequestLog(url, response.statusCode, headers: response.headers, responsebody: response.body);
+      _postRequestLog(
+        url,
+        response.statusCode,
+        headers: response.headers,
+        responsebody: response.body,
+      );
       if (response.statusCode == 200) {
         final decodedJson = jsonDecode(response.body);
         return NetworkResponse(
@@ -38,7 +48,7 @@ class NetworkClient {
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          errorMessage: errorMessage
+          errorMessage: errorMessage,
         );
       }
     } catch (e) {
@@ -51,16 +61,27 @@ class NetworkClient {
     }
   }
 
-  static Future<NetworkResponse> postRequest({required String url, Map<String, dynamic>? body,}) async {
+  static Future<NetworkResponse> postRequest({
+    required String url,
+    Map<String, dynamic>? body,
+  }) async {
     try {
       Uri uri = Uri.parse(url);
       _preRequestLog(url, body: body);
       Response response = await post(
         uri,
-        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'token': AuthController.token ?? '',
+        },
         body: jsonEncode(body),
       );
-      _postRequestLog(url, response.statusCode, headers: response.headers, responsebody: response.body);
+      _postRequestLog(
+        url,
+        response.statusCode,
+        headers: response.headers,
+        responsebody: response.body,
+      );
       if (response.statusCode == 200) {
         final decodedJson = jsonDecode(response.body);
         return NetworkResponse(
@@ -72,9 +93,9 @@ class NetworkClient {
         final decodedJson = jsonDecode(response.body);
         String errorMessage = decodedJson['data'] ?? 'Something went wrong';
         return NetworkResponse(
-            isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: errorMessage
+          isSuccess: false,
+          statusCode: response.statusCode,
+          errorMessage: errorMessage,
         );
       }
     } catch (e) {
@@ -87,28 +108,44 @@ class NetworkClient {
     }
   }
 
-  static void _preRequestLog(String url, {Map<String, dynamic>? body}){
+  static void _preRequestLog(String url, {Map<String, dynamic>? body}) {
     _logger.i(
       'URL => $url\n'
-          'Body : ${body}');
+      'Body : ${body}',
+    );
   }
 
-  static void _postRequestLog(String url, int statusCode, {Map<String, dynamic>? headers, dynamic responsebody, dynamic errorMessage}){
-    if(errorMessage != null){
+  static void _postRequestLog(
+    String url,
+    int statusCode, {
+    Map<String, dynamic>? headers,
+    dynamic responsebody,
+    dynamic errorMessage,
+  }) {
+    if (errorMessage != null) {
       _logger.i(
         ''
-            'Url : $url\n'
-            'Status code : $statusCode\n'
-            'Error Message : $errorMessage'
+        'Url : $url\n'
+        'Status code : $statusCode\n'
+        'Error Message : $errorMessage',
       );
     } else {
       _logger.i(
         ''
-            'Url : $url\n'
-            'Status code : $statusCode\n'
-            'Headers : $headers\n'
-            'Response : $responsebody',
+        'Url : $url\n'
+        'Status code : $statusCode\n'
+        'Headers : $headers\n'
+        'Response : $responsebody',
       );
     }
+  }
+
+  Future<void> _moveToLoginScreen() async {
+    await AuthController.clearUserData();
+    Navigator.pushAndRemoveUntil(
+      TaskManagerApp.navigatorKey.currentContext!,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (predicate) => false,
+    );
   }
 }

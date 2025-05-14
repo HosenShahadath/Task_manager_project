@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_manager_project/data/models/user_model.dart';
 import 'package:task_manager_project/ui/controllers/auth_controller.dart';
+import 'package:task_manager_project/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_project/ui/widgets/screen_background.dart';
 import 'package:task_manager_project/ui/widgets/tm_app_bar.dart';
+
+import '../../data/service/network_client.dart';
+import '../../data/utils/urls.dart';
+import '../widgets/snack_bar_message.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -20,6 +25,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
+  bool _updateProfileInProgress = false;
   XFile? _pickedImage;
 
   @override
@@ -109,9 +115,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     decoration: InputDecoration(hintText: 'Password'),
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: _onTapSubmitButton,
-                    child: Icon(Icons.arrow_circle_right_outlined),
+                  Visibility(
+                    visible: _updateProfileInProgress == false,
+                    replacement: const CenteredCircularProgressIndicator(),
+                    child: ElevatedButton(
+                      onPressed: _onTapSubmitButton,
+                      child: Icon(Icons.arrow_circle_right_outlined),
+                    ),
                   ),
                 ],
               ),
@@ -156,8 +166,42 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   void _onTapSubmitButton() {
     if(_formKey.currentState!.validate()){
-      // Update Profile
+      _updateProfile();
     }
+  }
+
+  Future<void> _updateProfile() async {
+    _updateProfileInProgress = true;
+    setState(() {
+
+    });
+    Map<String, dynamic> requestBody = {
+      "email": _emailTEController.text.trim(),
+      "firstName": _firstNameTEController.text.trim(),
+      "lastName": _lastNameTEController.text.trim(),
+      "mobile": _mobileTEController.text.trim(),
+
+    };
+
+    if(_passwordTEController.text.isNotEmpty){
+      requestBody['password'] = _passwordTEController.text;
+    }
+
+    NetworkResponse response = await NetworkClient.postRequest(
+      url: Urls.updateProfileUrl,
+      body: requestBody,
+    );
+    _updateProfileInProgress = false;
+    setState(() {
+
+    });
+    if (response.isSuccess){
+      _passwordTEController.clear();
+      showSnackBarMessage(context, 'User Data Updated successful');
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
+
   }
 
   void _onTapPhotoPicker() async {
