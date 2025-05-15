@@ -42,6 +42,13 @@ class NetworkClient {
           statusCode: response.statusCode,
           data: decodedJson,
         );
+      } else if (response.statusCode == 401){
+        _moveToLoginScreen();
+        return NetworkResponse(
+          isSuccess: false,
+          statusCode: response.statusCode,
+          errorMessage: 'Un-authorize user',
+        );
       } else {
         final decodedJson = jsonDecode(response.body);
         String errorMessage = decodedJson['data'] ?? 'Something went wrong';
@@ -89,7 +96,15 @@ class NetworkClient {
           statusCode: response.statusCode,
           data: decodedJson,
         );
-      } else {
+      } else if (response.statusCode == 401){
+        _moveToLoginScreen();
+        return NetworkResponse(
+          isSuccess: false,
+          statusCode: response.statusCode,
+          errorMessage: 'Un-authorize user',
+        );
+      } else
+      {
         final decodedJson = jsonDecode(response.body);
         String errorMessage = decodedJson['data'] ?? 'Something went wrong';
         return NetworkResponse(
@@ -140,12 +155,13 @@ class NetworkClient {
     }
   }
 
-  Future<void> _moveToLoginScreen() async {
-    await AuthController.clearUserData();
-    Navigator.pushAndRemoveUntil(
-      TaskManagerApp.navigatorKey.currentContext!,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-      (predicate) => false,
-    );
+
   }
+  Future<void> _moveToLoginScreen() async {
+  await AuthController.clearUserData();
+  Navigator.pushAndRemoveUntil(
+    TaskManagerApp.navigatorKey.currentContext!,
+    MaterialPageRoute(builder: (context) => LoginScreen()),
+        (predicate) => false,
+  );
 }

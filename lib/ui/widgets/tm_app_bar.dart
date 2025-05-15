@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:task_manager_project/ui/controllers/auth_controller.dart';
 
@@ -24,7 +26,11 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
         child: Row(
           children: [
-            CircleAvatar(radius: 16),
+            CircleAvatar(
+              radius: 16,
+              backgroundImage: _shouldShowImage(AuthController.userModel!.photo) ? MemoryImage(
+                base64Decode(AuthController.userModel!.photo)) : null,
+              ),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -41,12 +47,20 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
-            IconButton(onPressed: () => _onTapLogOutButton(context), icon: Icon(Icons.logout)),
+            IconButton(
+              onPressed: () => _onTapLogOutButton(context),
+              icon: Icon(Icons.logout),
+            ),
           ],
         ),
       ),
     );
   }
+
+  bool _shouldShowImage(String? photo){
+    return photo != null && photo.isNotEmpty;
+  }
+
 
   void _onTapProfileSection(BuildContext context) {
     Navigator.push(
@@ -60,7 +74,7 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (predicate) => false
+      (predicate) => false,
     );
   }
 

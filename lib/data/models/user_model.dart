@@ -5,6 +5,7 @@ class UserModel {
   late final String lastName;
   late final String mobile;
   late final String createdData;
+  late final String photo;
 
   // Named Constructor
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +15,7 @@ class UserModel {
     lastName = json['lastName'] ?? '';
     mobile = json['mobile'] ?? '';
     createdData = json['createdData'] ?? '';
+    photo = json['photo'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -24,6 +26,7 @@ class UserModel {
       'lastName': lastName,
       'mobile': mobile,
       'createdData': createdData,
+      'photo': photo,
     };
   }
 

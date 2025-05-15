@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_manager_project/data/models/user_model.dart';
@@ -185,6 +187,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
     if(_passwordTEController.text.isNotEmpty){
       requestBody['password'] = _passwordTEController.text;
+    }
+
+    if(_pickedImage != null){
+      List<int> imageBytes = await _pickedImage!.readAsBytes();
+      String encodedUmage = base64Encode(imageBytes);
+      requestBody['photo'] = encodedUmage;
     }
 
     NetworkResponse response = await NetworkClient.postRequest(
