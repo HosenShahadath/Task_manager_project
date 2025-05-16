@@ -27,8 +27,11 @@ class NetworkClient {
   static Future<NetworkResponse> getRequest({required String url}) async {
     try {
       Uri uri = Uri.parse(url);
+      Map<String, String> headers = {
+        'token' : AuthController.token ?? '',
+      };
       _preRequestLog(url);
-      Response response = await get(uri);
+      Response response = await get(uri, headers: headers);
       _postRequestLog(
         url,
         response.statusCode,
