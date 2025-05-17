@@ -1,10 +1,10 @@
 import 'package:task_manager_project/data/models/task_status_count.dart';
 
-class TaskStatusCountListModel {
+class TaskStatusCount {
   late final String status;
-  static late final List<TaskStatusCountModel> statusCountList;
+  late final List<TaskStatusCountModel> statusCountList;
 
-  TaskStatusCountListModel.fromJson(Map<String, dynamic> jsonData) {
+  TaskStatusCount.fromJson(Map<String, dynamic> jsonData) {
     status = jsonData['status'];
     if (jsonData['data'] != null) {
           List<TaskStatusCountModel> list= [];

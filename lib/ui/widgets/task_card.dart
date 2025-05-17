@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_project/data/models/task_model.dart';
 
 enum TaskStatus{
   sNew,
@@ -10,10 +11,11 @@ enum TaskStatus{
 class task_card extends StatelessWidget {
   const task_card({
     super.key,
-    required this.taskStatus,
+    required this.taskStatus, required this.taskModel,
   });
 
   final TaskStatus taskStatus;
+  final TaskModel taskModel;
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +28,15 @@ class task_card extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Title will be here', style: TextStyle(
+            Text(taskModel.title, style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w600,
             ),),
-            Text('Desciption will be here'),
-            Text('Date : 12/23/25'),
+            Text(taskModel.description),
+            Text('Date : ${taskModel.createdData}'),
             Row(
               children: [
                 Chip(
-                  label: Text('New', style: TextStyle(color: Colors.white)),
+                  label: Text(taskModel.status, style: TextStyle(color: Colors.white)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
